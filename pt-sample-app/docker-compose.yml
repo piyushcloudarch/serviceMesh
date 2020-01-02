@@ -1,0 +1,71 @@
+version: '3'
+services:    
+  service_frontproxy:
+    build: frontproxy/
+    container_name: frontproxy
+    ports:
+      - "10000:10000"
+    volumes:
+      - envoylogs:/var/log
+
+  service_productapp:
+    build: productapp/
+    container_name: productapp
+    ports:
+      - "10011:10011"
+    volumes:
+      - envoylogs:/var/log
+
+  service_customerapp:
+    build: customerapp/
+    container_name: customerapp
+    ports:
+      - "10012:10012"
+    volumes:
+      - envoylogs:/var/log
+
+  service_addressapp:
+    build: address/
+    container_name: addressapp
+    ports:
+      - "10013:10013"
+    volumes:
+      - envoylogs:/var/log
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    container_name: elasticsearch
+    environment:
+    - cluster.name=docker-cluster
+    ports:
+    - 9200:9200
+    - 9300:9300
+    volumes:
+      - envoylogs:/var/log
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.5.4
+    environment:
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+    - "5601:5601"
+    volumes:
+      - envoylogs:/var/log
+    depends_on: ['elasticsearch']
+
+  filebeat:
+    build: filebeat/
+    ports:
+      - "5044:5044"
+    volumes:
+      - envoylogs:/var/log
+    depends_on: ['kibana']
+    
+  importobjects:
+    build: importobjects/
+    depends_on: ['filebeat']
+          
+volumes:
+    envoylogs:
+        external: false   

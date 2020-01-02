@@ -1,0 +1,25 @@
+docker kill $(docker ps -q -a) 
+docker rm $(docker ps -a -q)
+
+docker rmi $(docker images -a -q)
+docker rmi $(docker images -q)
+
+docker volume rm $(docker volume list -q)
+
+docker-compose up 
+
+docker ps
+====================================================
+
+URL:
+http://localhost:10000/ptapp/product?product=1
+http://localhost:10000/ptapp/customer?customer=1
+http://localhost:10000/ptapp/address?address=1
+
+
+Health:
+http://localhost:10011/health
+http://localhost:10012/health
+http://localhost:10013/health
+
+

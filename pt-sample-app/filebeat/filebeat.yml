@@ -1,0 +1,48 @@
+filebeat.prospectors:
+- input_type: log
+  fields.application: product
+  paths:
+    - /etc/filebeat/product.data
+  tags: ["products"]
+- input_type: log
+  fields.application: customer
+  paths:
+    - /etc/filebeat/customer.data
+  tags: ["customers"]
+- input_type: log
+  fields.application: address
+  paths:
+    - /etc/filebeat/address.data
+  tags: ["address"]
+- input_type: log
+  fields.application: envoyproduct
+  paths:
+    - /var/log/product.log
+  tags: ["envoyproduct"]
+- input_type: log
+  fields.application: envoycustomer
+  paths:
+    - /var/log/customer.log
+  tags: ["envoycustomer"]
+- input_type: log
+  fields.application: envoyaddress
+  paths:
+    - /var/log/address.log
+  tags: ["envoyaddress"]
+- input_type: log
+  fields.application: envoyfrontproxy
+  paths:
+    - /var/log/frontproxy.log
+  tags: ["envoyfrontproxy"]
+
+processors:
+ - decode_json_fields:
+     fields: ['message']
+     target: json
+     overwrite_keys: true
+ - add_locale: ~
+
+output.elasticsearch:
+  hosts: '${ELASTICSEARCH_HOSTS:http://elasticsearch:9200}'
+  indices:
+    - index: "%{[fields.application]}-%{+yyyy.MM.dd}"

@@ -1,0 +1,3 @@
+docker build -t customerapp .
+docker run -d --name customer -p 10012:10012 customerapp
+docker ps
